@@ -1,5 +1,6 @@
 const productList = 'li.ais-Hits-item';
 const paginationButtons = 'ul.ais-Pagination-list > a';
+const sortDropdown = 'select:contains("Preporučeno")';
 
 const getProductName = (item) => {
   const name = item.split(' ');
@@ -40,4 +41,30 @@ function checkProductList(product) {
   });
 }
 
-export default { assertURL, handlePaginationAndCheckProductList };
+function sortByCheapestAndValidate() {
+  const pricesArray = [];
+  cy.get(sortDropdown).select('Rastućoj ceni');
+  cy.wait(1000);
+  cy.get(productList)
+    .find('span:contains("RSD")', { log: false })
+    .each(($el) => {
+      const text = $el.siblings().text();
+      const priceWithoutDot = text.replace('.', '');
+      const priceNumber = parseInt(priceWithoutDot);
+      pricesArray.push(priceNumber);
+    })
+    .then(() => {
+      cy.wrap(pricesArray).then((pricesArray) => {
+        //expect that the element with the lowest price is at the array first index
+        let minPrice = Math.min(...pricesArray);
+        let minIndex = pricesArray.indexOf(minPrice);
+        expect(minIndex).equals(0);
+        //expect that the element with the highest price is at the array last index
+        let maxPrice = Math.max(...pricesArray);
+        let maxIndex = pricesArray.indexOf(maxPrice);
+        expect(maxIndex).equals(pricesArray.length - 1);
+      });
+    });
+}
+
+export default { assertURL, handlePaginationAndCheckProductList, sortByCheapestAndValidate };
