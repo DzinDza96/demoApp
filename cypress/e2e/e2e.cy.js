@@ -7,13 +7,13 @@ beforeEach(() => {
   homePage.handleCookiePopup();
 });
 
-describe('Ananas e2e spec', () => {
+describe('Ananas e2e tests', () => {
   it('Validate search functionality', () => {
     homePage.searchForProduct(data.searchString);
     searchResultsPage.assertURL(data.searchString);
     searchResultsPage.handlePaginationAndCheckProductList(data.searchString);
   });
-  it.only('Validate sort by cheapest', () => {
+  it('Validate sort by cheapest', () => {
     homePage.searchForProduct(data.searchString);
     searchResultsPage.sortByCheapestAndValidate();
   });
